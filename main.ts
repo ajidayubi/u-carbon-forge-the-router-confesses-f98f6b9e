@@ -26,6 +26,10 @@ if (LINE.trim().length === 0) {
 if (/[\r\n]/.test(LINE)) {
   throw new Error("entry must be a single line, no line breaks");
 }
+// A stray control character would break the one-line gate, so reject any.
+if (/[\u0000-\u001f\u007f]/.test(LINE)) {
+  throw new Error("entry must not contain control characters");
+}
 
 const here = dirname(fileURLToPath(import.meta.url));
 const outDir = resolve("/output");
@@ -39,4 +43,5 @@ if (written !== LINE) {
 }
 console.log(LINE);
 console.log(`chars: ${LINE.length}`);
+console.log(`wrote ${Buffer.byteLength(LINE, "utf8")} bytes to ${outPath}`);
 void here;
